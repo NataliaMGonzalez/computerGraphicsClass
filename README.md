@@ -1,2 +1,2 @@
 # computerGrpahicsClass
-Courseworks for computer grpahics class
+Courseworks for computer graphics class
