@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <script type="module">
+    import * as THREE from 'https://unpkg.com/three/build/three.module.js';
+    let renderer, scene, camera, mesh;
+
+    function init(){
+        // RENDERER
+        renderer = new THREE.WebGLRenderer({antialias: false});
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setClearColor(new THREE.Color(0.2, 0.2, 0.35));
+        document.body.appendChild(renderer.domElement);
+
+        // SCENE
+        scene = new THREE.Scene();
+
+        // CAMERA
+        let fov = 60;
+        let aspect = window.innerWidth / window.innerHeight;
+        let near = 0.1;
+        let far = 10000;
+        camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
+        camera.position.set(0, 0, 3);
+
+        //MODELS
+        let geometry = new THREE.SphereGeometry();
+        let material = new THREE.MeshBasicMaterial({color: "white", wireframe: true});
+        mesh = new THREE.Mesh(geometry, material);
+
+        //SCENE GRAPH
+        scene.add(mesh);
+
+        //DRAW SCENE
+        renderLoop();
+    }
+
+function renderLoop(){
+    // DRAW SCENE
+    console.log("frame");
+    renderer.render(scene, camera);
+    updateScene();
+    requestAnimationFrame(renderLoop);
+}
+
+function updateScene(){
+    mesh.rotation.y = mesh.rotation.y + 1 * Math.PI / 180; // en radianes
+    
+}
+
+// EVENT LISTENERS & HANDLERS
+document.addEventListener("DOMContentLoaded", init);
+  </script>
+</body>
+
+</html>

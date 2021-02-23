@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/style.css">
+    <title>Document</title>
+</head>
+<body>
+    <style >
+    html, body {
+        width: 100%;
+        height: 100%;
+        padding: 0;
+        margin: 0;
+        overflow: hidden;
+    }
+    </style>
+    <script src='//mrdoob.github.io/stats.js/build/stats.min.js'></script>
+    <script type="module">
+        import * as THREE from 'https://unpkg.com/three/build/three.module.js';
+        import {OrbitControls} from "https://unpkg.com/three@0.119.0/examples/jsm/controls/OrbitControls.js";
+        "using strict";
+
+        let renderer, scene, camera, mesh, cameraControl, stats;
+
+        function init() {
+
+            // RENDERER
+            renderer = new THREE.WebGLRenderer({antialias: true});
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setClearColor(new THREE.Color(0.2, 0.2, 0.35));
+            document.body.appendChild(renderer.domElement);
+
+            // SCENE
+            scene = new THREE.Scene();
+
+            // CAMERA
+            let fov = 60;
+            let aspect = window.innerWidth / window.innerHeight;
+            let near = 0.1;
+            let far = 10000;
+            camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
+            camera.position.set(0, 0, 3);
+            cameraControl = new OrbitControls(camera, renderer.domElement);
+
+            // MODELS
+            // let ns = 10;
+            let geometry = new THREE.SphereGeometry();
+            let material = new THREE.MeshBasicMaterial({color: "white", wireframe: true});
+            mesh = new THREE.Mesh(geometry, material);
+            // let mesh2 = new THREE.Mesh(geometry, material);
+            // mesh2.position.x = -1.5;
+
+            // SCENE GRAPH
+            scene.add(mesh);
+            
+            
+            // scene.add(mesh2);
+
+            // STATS
+            stats = new Stats();
+            stats.showPanel(0);
+            document.body.appendChild(stats.dom);
+
+            // RENDER LOOP
+            renderLoop();
+        }
+
+        function renderLoop() {
+            stats.begin();
+            renderer.render(scene, camera); // DRAW SCENE
+            updateScene();
+            stats.end();
+            stats.update();
+            requestAnimationFrame(renderLoop);
+        }
+
+        function updateScene() {
+        // mesh.rotation.y = mesh.rotation.y + 1 * Math.PI / 180; // en radianes
+        }
+
+        // EVENT LISTENERS & HANDLERS
+        document.addEventListener("DOMContentLoaded", init);
+
+        window.addEventListener("resize", function(){
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            camera.aspect  = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+        });
+    </script>
+</body>
+</html>
