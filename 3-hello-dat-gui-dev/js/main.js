@@ -36,6 +36,7 @@ function init() {
     
     // GUI
     let gui = new dat.GUI();
+    let listColors = ["White","Red","Blue"];
 
     // MODEL
     let model = {
@@ -45,9 +46,16 @@ function init() {
             model.rotY = 0
             mesh.rotation.y = model.rotY
         },
+        listColors,
+        defaultItem: listColors[0],
+        colorPalette: [255,255,255] // RGB
     }
 
     // VIEW
+
+    // General Menu
+    let generalMenu = gui.addFolder("General Menu");
+
     // Position Menu
     let posMenu = gui.addFolder("Position Menu");
     posMenu.open();
@@ -57,21 +65,38 @@ function init() {
 
     })
 
+    // Rotation Menu
+    let rotMenu = gui.addFolder("Rotation Menu");
+
     // Model Orientation
-    let sliderRotY = posMenu.add(model, "rotY").min(-180).max(+180).step(10).name("Y (deg)").listen().onChange(function(value){
+    let sliderRotY = rotMenu.add(model, "rotY").min(-180).max(+180).step(10).name("Y (deg)").listen().onChange(function(value){
      mesh.rotation.y = value * Math.PI / 180   
     })
 
+    // Model's Appearance Menu
+    let appearMenu = gui.addFolder("Model's Apperance Menu");
+
+
     // Model Draw Mode
-    let chbWireframe = gui.add(mesh.material, "wireframe").setValue(true).name("Wireframe").onChange(function(){
+    let chbWireframe = appearMenu.add(mesh.material, "wireframe").setValue(true).name("Wireframe").onChange(function(){
   
+    });
+    let listColor = appearMenu.add(model, "defaultItem", model.listColors).name("Color List").onChange(function(item){
+        mesh.material.color = new THREE.Color(model.defaultItem.toLowerCase());
+        model.colorPalette = [mesh.material.color.r * 256,mesh.material.color.g * 256,mesh.material.color.b * 256,];
+    });
+
+    let colorPalette = appearMenu.addColor(model, "colorPalette").name("Color Palette").listen().onChange(function(color){
+       // console.log(color);
+       mesh.material.color = new THREE.Color(color[0]/256, color[1]/256 , color[2]/256);
+       // model.colorPalette = new THREE.Color(color[0]/256, color[1]/256 , color[2]/256);
     });
 
     // Button Position Home
     let btnPosHome = posMenu.add(model, "posHome").name("HOME");
 
     //TextField Model Name
-    let tfMeshName = gui.add(mesh, "name").name("Model's Name").onChange(function(value){
+    let tfMeshName = generalMenu.add(mesh, "name").name("Model's Name").onChange(function(value){
         console.log(mesh.name);
     });
 
