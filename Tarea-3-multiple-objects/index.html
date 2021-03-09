@@ -1,0 +1,256 @@
+<!--
+    Natalia González
+    A01382007
+    08/Marzo/2021
+    Tarea 3 - interaccion multiples objetos
+-->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+    html,
+    body {
+        width: 100%;
+        height: 100%;
+        padding: 0;
+        margin: 0;
+        overflow: hidden;
+    }
+</style>
+
+<body>
+    <script src='//mrdoob.github.io/stats.js/build/stats.min.js'></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.7/dat.gui.min.js"></script>
+
+    <script type="module">
+        import * as THREE from 'https://unpkg.com/three/build/three.module.js';
+        import { OrbitControls } from "https://unpkg.com/three@0.119.0/examples/jsm/controls/OrbitControls.js";
+        import Stats from "https://unpkg.com/three/examples/jsm/libs/stats.module.js";
+
+
+        "using strict";
+
+        let renderer, scene, camera, cameraControl, mesh, stats, posMenu, appearMenu, rotMenu;
+
+        function init() {
+            // RENDERER
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            //renderer.setClearColor(new THREE.Color(0.2, 0.2, 0.35));
+            document.body.appendChild(renderer.domElement);
+
+            // SCENE
+            scene = new THREE.Scene();
+
+            // CAMERA
+            let fov = 60;
+            let aspect = window.innerWidth / window.innerHeight;
+            let near = 0.1;
+            let far = 10000;
+            camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
+            camera.position.set(0, 0, 3);
+            cameraControl = new OrbitControls(camera, renderer.domElement);
+
+            // MODELS
+            // Models added on button click
+
+
+            // SCENE GRAPH
+            scene.add(mesh);
+
+            // GUI
+            let gui = new dat.GUI();
+
+            // VIEW
+
+            // General Menu
+            let generalMenu = gui.addFolder("General Menu");
+
+            // Position Menu
+            posMenu = gui.addFolder("Position Menu");
+            posMenu.open();
+
+            // Rotation Menu
+            rotMenu = gui.addFolder("Rotation Menu");
+
+            // Model's Appearance Menu
+            appearMenu = gui.addFolder("Model's Apperance Menu");
+
+            // Add Cube Button
+            let btnAddCube = {
+                add: function () {
+                    addCube();
+                }
+            };
+
+            gui.add(btnAddCube, 'add').name('Add Cube');
+
+            // Add Sphere Button
+            let btnAddSphere = {
+                add: function () {
+                    addSphere();
+                }
+            };
+
+            gui.add(btnAddSphere, 'add').name('Add Sphere');
+
+            // Add Sphere Button
+            let btnAddCone = {
+                add: function () {
+                    addCone();
+                }
+            };
+
+            gui.add(btnAddCone, 'add').name('Add Cone');
+
+            gui.close();
+
+            // STATS
+            stats = new Stats();
+            stats.showPanel(0);
+            document.body.appendChild(stats.dom);
+
+            // RENDER LOOP
+            renderLoop();
+        }
+
+        function renderLoop() {
+            stats.begin();
+            renderer.render(scene, camera); // DRAW SCENE
+            updateScene();
+            stats.end();
+            stats.update();
+            requestAnimationFrame(renderLoop);
+        }
+
+        function updateScene() {
+
+        }
+
+        // EVENT LISTENERS & HANDLERS
+        document.addEventListener("DOMContentLoaded", init);
+
+        window.addEventListener("resize", function () {
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+        });
+
+        function addCube() {
+            let geometry = new THREE.BoxGeometry();
+            let material = new THREE.MeshBasicMaterial({ color: "white", wireframe: true });
+            let cube = new THREE.Mesh(geometry, material);
+
+            let model = {
+                rotY: cube.rotation.y * 180 / Math.PI, // convert to degrees
+                colorPalette: [255, 255, 255] // RGB
+            }
+
+            let sliderPosX = posMenu.add(cube.position, "x").min(-5).max(+5).step(0.5).name("Cube X").listen().onChange(function () {
+
+            });
+
+            let sliderRotY = rotMenu.add(model, "rotY").min(-180).max(+180).step(10).name("Cube Y (deg)").listen().onChange(function (value) {
+                cube.rotation.y = value * Math.PI / 180
+            });
+            
+            let sliderPosZ = posMenu.add(cube.position, "z").min(-5).max(+5).step(0.5).name("Cube Z").listen().onChange(function () {
+
+            });
+
+            let chbWireframe = appearMenu.add(cube.material, "wireframe").setValue(true).name("Cube Wireframe").onChange(function () {
+
+            });
+
+            let colorPalette = appearMenu.addColor(model, "colorPalette").name("Cube Color Palette").listen().onChange(function (color) {
+                // console.log(color);
+                cube.material.color = new THREE.Color(color[0] / 256, color[1] / 256, color[2] / 256);
+                // model.colorPalette = new THREE.Color(color[0]/256, color[1]/256 , color[2]/256);
+            });
+
+            //scene is global
+            scene.add(cube);
+        };
+
+
+        function addSphere() {
+            let geometry = new THREE.SphereGeometry();
+            let material = new THREE.MeshBasicMaterial({ color: "white", wireframe: true });
+            let sphere = new THREE.Mesh(geometry, material);
+
+            let model = {
+                rotY: sphere.rotation.y * 180 / Math.PI, // convert to degrees
+                colorPalette: [255, 255, 255] // RGB
+            }
+
+            let sliderPosX = posMenu.add(sphere.position, "x").min(-5).max(+5).step(0.5).name("Sphere X").listen().onChange(function () {
+
+            });
+
+            let sliderRotY = rotMenu.add(model, "rotY").min(-180).max(+180).step(10).name("Sphere Y (deg)").listen().onChange(function (value) {
+                sphere.rotation.y = value * Math.PI / 180
+            });
+            
+            let sliderPosZ = posMenu.add(sphere.position, "z").min(-5).max(+5).step(0.5).name("Sphere Z").listen().onChange(function () {
+
+            });
+
+            let chbWireframe = appearMenu.add(sphere.material, "wireframe").setValue(true).name("Sphere Wireframe").onChange(function () {
+
+            });
+
+            let colorPalette = appearMenu.addColor(model, "colorPalette").name("Sphere Color Palette").listen().onChange(function (color) {
+                // console.log(color);
+                sphere.material.color = new THREE.Color(color[0] / 256, color[1] / 256, color[2] / 256);
+                // model.colorPalette = new THREE.Color(color[0]/256, color[1]/256 , color[2]/256);
+            });
+
+            //scene is global
+            scene.add(sphere);
+        }
+
+        function addCone() {
+            let geometry = new THREE.ConeGeometry();
+            let material = new THREE.MeshBasicMaterial({ color: "white", wireframe: true });
+            let cone = new THREE.Mesh(geometry, material);
+
+            let model = {
+                rotY: cone.rotation.y * 180 / Math.PI, // convert to degrees
+                colorPalette: [255, 255, 255] // RGB
+            }
+
+            let sliderPosX = posMenu.add(cone.position, "x").min(-5).max(+5).step(0.5).name("Cone X").listen().onChange(function () {
+
+            });
+
+            let sliderRotY = rotMenu.add(model, "rotY").min(-180).max(+180).step(10).name("Cone Y (deg)").listen().onChange(function (value) {
+                cone.rotation.y = value * Math.PI / 180
+            });
+
+            let sliderPosZ = posMenu.add(cone.position, "z").min(-5).max(+5).step(0.5).name("Cone Z").listen().onChange(function () {
+
+            });
+
+            let chbWireframe = appearMenu.add(cone.material, "wireframe").setValue(true).name("Cone Wireframe").onChange(function () {
+
+            });
+
+            let colorPalette = appearMenu.addColor(model, "colorPalette").name("Sphere Color Palette").listen().onChange(function (color) {
+                // console.log(color);
+                cone.material.color = new THREE.Color(color[0] / 256, color[1] / 256, color[2] / 256);
+                // model.colorPalette = new THREE.Color(color[0]/256, color[1]/256 , color[2]/256);
+            });
+
+            //scene is global
+            scene.add(cone);
+        };
+    </script>
+</body>
+
+</html>
