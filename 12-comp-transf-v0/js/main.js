@@ -5,7 +5,7 @@ import * as dat from "/js/jsm/libs/dat.gui.module.js";
 
 "use strict";
 
-let renderer, scene, camera, box, cameraControls, gui, stats;
+let renderer, scene, camera, box, cameraControls, gui, stats, theta = 0;
 window.anim = false;
 
 function init(event) {
@@ -30,7 +30,7 @@ function init(event) {
     // MODELS
     // BOX
     box = new Box();
-    
+    /*
     box.matrixAutoUpdate = false;
     // box.position.set(2,0,0);
     // box.rotation.set(0, Math.PI/4, 0);
@@ -43,7 +43,8 @@ function init(event) {
     Ry.makeRotationY(Math.PI / 4);
     M.multiplyMatrices(T, Ry);
     box.matrix.copy(M);
-    
+    */
+    box.matrixAutoUpdate = false;
 
 
 
@@ -100,7 +101,21 @@ function renderLoop() {
 
 function updateScene() {
     if(anim) {
-        box.rotation.y = box.rotation.y + 0.01;
+        theta = theta + 0.01;
+        let xq = -0.5, yq = 0.5, zq = 0.5;
+        // box.rotation.y = box.rotation.y + 0.01;
+        // M = T2(xq, yq, zq) Ry(theta) T1(-xq, -yq, -zq)
+        let T1 = new THREE.Matrix4();
+        let T2 = new THREE.Matrix4();
+        let Ry = new THREE.Matrix4();
+        let M = new THREE.Matrix4();
+
+        T1.makeTranslation(-xq, -yq, -zq);
+        T2.makeTranslation(xq, yq, zq);
+        Ry.makeRotationY(theta);
+        M.multiplyMatrices(T2, Ry);
+        M.multiplyMatrices(M, T1);
+        box.matrix.copy(M);
     }
 }
 
